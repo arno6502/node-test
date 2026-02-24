@@ -1,28 +1,36 @@
 name: Docker Build
-
+# Läuft bei Push und Pull Request auf jeden Branch
 on:
   push:
   pull_request:
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Repository auschecken
+      # 1️⃣ Repository auschecken
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Docker Image bauen
-        run: docker build -t arnogroeger/node:001 .
+      # 2️⃣ Docker Image bauen
+      - name: Build Docker image
+        run: |
+          set -x
+          docker build -t ghcr.io/${{ github.actor }}/node-test:001 .
 
-      - name: Docker Image anzeigen
-        run: docker images arnogroeger/node:001
+      # 3️⃣ Docker Image anzeigen
+      - name: Show Docker image
+        run: docker images ghcr.io/${{ github.actor }}/node-test:001
 
-      - name: Login bei Docker Hub
+      # 4️⃣ Login bei GitHub Container Registry (automatisch mit GITHUB_TOKEN)
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Image pushen
-        run: docker push arnogroeger/node:001
+      # 5️⃣ Image pushen zu GHCR
+      - name: Push Docker image to GHCR
+        run: docker push ghcr.io/${{ github.actor }}/node-test:001
