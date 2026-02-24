@@ -1,0 +1,8 @@
+sudo: required
+services:
+  - docker
+
+script:
+  - docker build -t arnogroeger/node:001 .
+  - docker image arnogroeger/node:001
+  

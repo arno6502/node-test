@@ -7,14 +7,16 @@ USER= root
 #sicherstellen, dass es für die Applikation lokal das
 # Verzeichnis app auch existiert
 RUN mkdir /usr/src/app
- 
+
+ENV PATH /usr/src/app/node_modules/.bin:$PATH
+
 WORKDIR /usr/src/app
 
-COPY package*.json ./
-
+COPY package*.json /usr/src/app
+#und gemäss der Paketlisten alle dependencies installieren
 RUN npm install
 
-COPY . .
+COPY . /usr/src/app
 
 EXPOSE 4000
 #hiermit sicherstellen, dass für den Betrieb der
